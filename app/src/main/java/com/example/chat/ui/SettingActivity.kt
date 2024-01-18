@@ -1,5 +1,6 @@
 package com.example.chat.ui
 
+import android.content.Intent
 import android.net.Uri
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
@@ -22,6 +23,11 @@ class SettingActivity : AppCompatActivity() {
         actionbar()
         setupProfile()
         FirestoresClass().getAlltUser(this)
+        binding?.chatSetting?.setOnClickListener {
+            val intent = Intent(this, ChatActivity::class.java)
+           // intent.putExtra("model",list[position])
+            startActivity(intent)
+        }
 
     }
     private fun actionbar() {

@@ -24,9 +24,9 @@ class MainActivity : AppCompatActivity() {
             binding?.pager?.let { it1 ->
                 TabLayoutMediator(it, it1){ tab, pos->
                     when(pos){
-                        0-> tab.text = "Trò chuyện"
-                        1-> tab.text = "Tìm kiếm"
-                        2-> tab.text = "Cuộc gọi"
+                        0-> tab.text = "Message"
+                        1-> tab.text = "Friend "
+                        2-> tab.text = "Status"
                     }
                 }.attach()
             }

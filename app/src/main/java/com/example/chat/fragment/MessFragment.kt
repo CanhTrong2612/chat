@@ -12,7 +12,9 @@ import com.example.chat.R
 import com.example.chat.adapter.RecentChatAdapter
 import com.example.chat.firebase.FirestoresClass
 import com.example.chat.model.ChatRoomModel
+import com.example.chat.model.UserModel
 import com.example.chat.ui.SelectUserToSendMessageActivity
+import com.example.whatsapp.utils.Constant
 import com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton
 
 
@@ -30,25 +32,30 @@ class MessFragment : Fragment() {
     ): View? {
         val view = inflater.inflate(R.layout.fragment_mess, container, false)
         rv = view.findViewById(R.id.rv)
-        fab = view.findViewById(R.id.extended_fab)
-        fab!!.setOnClickListener {
-            startActivity(Intent(requireContext(), SelectUserToSendMessageActivity::class.java))
-        }
-        FirestoresClass().getUserToChatRoom(this)
+//        fab = view.findViewById(R.id.extended_fab)
+//        fab!!.setOnClickListener {
+//            startActivity(Intent(requireContext(), SelectUserToSendMessageActivity::class.java))
+//        }
+        FirestoresClass().getUserRecentToChatRoom(this)
 
         return view
         // Inflate the layout for this fragment
 
     }
 
-    fun displayListUser(list: ArrayList<ChatRoomModel>) {
-        val adapter = RecentChatAdapter(list, null)
+    fun displayListUser(list: ArrayList<UserModel>) {
+        val adapter = RecentChatAdapter(requireContext(),list,this)
         rv!!.adapter = adapter
         rv!!.layoutManager = LinearLayoutManager(requireContext())
-        //  adapter.notifyDataSetChanged()
-
-        FirestoresClass().getUserToChatRoom(this)
+        FirestoresClass().getUserRecentToChatRoom(this)
     }
-
+    fun getChatRoomSuccess(){
+        FirestoresClass().getUserRecentToChatRoom(this)
+    }
+//    fun update(user: UserModel){
+//        val hashMap= HashMap<String,Any>()/    val user = UserModel()
+//        hashMap[Constant.ID]="123"
+//        FirestoresClass().update(this,user.id,hashMap)
+//    }
 
 }

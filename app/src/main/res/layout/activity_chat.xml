@@ -55,7 +55,7 @@
             android:layout_marginEnd="8dp"
             app:layout_constraintBottom_toTopOf="@+id/linearLayout"
             app:layout_constraintEnd_toEndOf="parent"
-
+            app:layout_constraintHorizontal_bias="0.0"
             app:layout_constraintStart_toStartOf="parent" />
 
         <LinearLayout
@@ -68,14 +68,14 @@
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent">
 
-            <ImageButton
-                android:id="@+id/camera_chat"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_gravity="center"
-                android:layout_margin="8dp"
-                android:background="@color/white"
-                android:src="@drawable/photo_camera_24" />
+<!--            <ImageButton-->
+<!--                android:id="@+id/camera_chat"-->
+<!--                android:layout_width="wrap_content"-->
+<!--                android:layout_height="wrap_content"-->
+<!--                android:layout_gravity="center"-->
+<!--                android:layout_margin="8dp"-->
+<!--                android:background="@color/white"-->
+<!--                android:src="@drawable/photo_camera_24" />-->
 
             <ImageButton
                 android:id="@+id/library_chat"
@@ -85,12 +85,10 @@
                 android:background="@color/white"
                 android:src="@drawable/photo_library_24" />
 
-            <FrameLayout
-                android:layout_weight="1"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent">
+
 
                 <EditText
+                    android:layout_weight="1"
                     android:id="@+id/edt_send_message"
                     android:layout_width="match_parent"
                     android:layout_height="50dp"
@@ -98,12 +96,8 @@
                    android:layout_gravity="center"
                     android:background="@drawable/custom_send_message"
                     android:padding="10dp" />
-                <ImageView
-                    android:id="@+id/image_select"
-                    android:layout_width="40dp"
-                    android:layout_height="40dp"/>
 
-            </FrameLayout>
+
 
 
             <ImageButton

@@ -1,12 +1,13 @@
 package com.example.chat.ui
 
 import android.annotation.SuppressLint
+import android.app.Activity
 import android.content.Intent
+import android.graphics.Bitmap
 import android.net.Uri
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.provider.MediaStore
-import android.view.View
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.LinearLayoutManager.VERTICAL
 import com.bumptech.glide.Glide
@@ -16,7 +17,8 @@ import com.example.chat.firebase.FirestoresClass
 import com.example.chat.model.ChatMessage
 import com.example.chat.model.ChatRoomModel
 import com.example.chat.model.UserModel
-import com.example.whatsapp.utils.Constant.PICK_IMAGE_REQUEST
+import com.example.whatsapp.utils.Constant.PICK_IMAGE_REQUEST_CODE
+import com.example.whatsapp.utils.Constant.REQUEST_IMAGE_CAPTURE
 import com.google.firebase.storage.FirebaseStorage
 import com.google.firebase.storage.StorageReference
 import java.text.SimpleDateFormat
@@ -24,10 +26,9 @@ import java.util.Date
 import java.util.UUID
 
 class ChatActivity : AppCompatActivity() {
-
+    lateinit var user :UserModel
     private var binding: ActivityChatBinding? = null
-     var selectedImageUri: Uri? = null
-     var isImageSelected = false
+    var selectedImageUri: Uri? = null
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityChatBinding.inflate(layoutInflater)
@@ -35,7 +36,6 @@ class ChatActivity : AppCompatActivity() {
         actionbar()
         displayUserInToolbar()
         // createChatRoom()
-        displayMessage()
         selectImageToGallery()
         binding?.btnSend?.setOnClickListener {
             if (selectedImageUri != null) {
@@ -45,15 +45,8 @@ class ChatActivity : AppCompatActivity() {
             if (message!!.isNotEmpty()) {
                 sendMessage(message!!, "")
             }
-
         }
-
-
-//        binding?.btnSend?.setOnClickListener {
-//            val message = binding?.edtSendMessage?.text?.toString()
-
-//        }
-
+        displayMessage()
     }
 
     fun selectImageToGallery() {
@@ -61,30 +54,26 @@ class ChatActivity : AppCompatActivity() {
             openImagePicker()
         }
     }
-
+    @SuppressLint("SimpleDateFormat")
     private fun sendMessage(message: String, img: String) {
-//        var user = intent.getParcelableExtra<UserModel>("model")
-//        val chats = ChatMessage(message,FirestoresClass().getCurrentID())
-//        FirestoresClass().getChatRoomMessage(this,user,user!!.id,chats)
-        //   val message = binding!!.edtSendMessage!!.text!!.toString()
-        var user = intent.getParcelableExtra<UserModel>("model")
-        val chatRoom = ChatRoomModel(
+        user = intent.getParcelableExtra<UserModel>("model")!!
+        val chatRoom = UserModel(  FirestoresClass().getCurrentID(),
+            user!!.email,user.name,"","",user.image,
             FirestoresClass().getCurrentID() + "_" + user!!.id,
             listOf(FirestoresClass().getCurrentID(), user!!.id),
             SimpleDateFormat("HH:mm").format(Date()),
-            FirestoresClass().getCurrentID(),
             message!!,
-            user.name,
-            user.image
-        )
+            img!!,
+         //   user.userIds!![1]
 
-        FirestoresClass().createChatRoom(this, chatRoom, user!!.id)
+        )
+        FirestoresClass().createChatRoom( chatRoom, user!!.id)
         val chats = ChatMessage(
             message!!,
             img,
             FirestoresClass().getCurrentID()
         )
-        FirestoresClass().getChatRoomMessage(this, chatRoom, user!!.id, chats)
+        FirestoresClass().createChatRoomMessage(this, user!!.id, chats)
 
     }
 
@@ -96,30 +85,27 @@ class ChatActivity : AppCompatActivity() {
     }
 
     private fun displayUserInToolbar() {
-        var user = intent.getParcelableExtra<UserModel>("model")
+        user = intent.getParcelableExtra<UserModel>("model")!!
         binding?.chatName?.text = user!!.name
         Glide.with(this).load(user?.image).into(binding!!.chatImg)
     }
 
-    private fun createChatRoom() {
-        var user = intent.getParcelableExtra<UserModel>("model")
-        val chatRoom = ChatRoomModel(
-            FirestoresClass().getCurrentID() + "_" + user!!.id,
-            listOf(FirestoresClass().getCurrentID(), user!!.id)
-        )
-        FirestoresClass().createChatRoom(this, chatRoom, user!!.id)
-
-    }
+//    private fun createChatRoom() {
+//        var user = intent.getParcelableExtra<UserModel>("model")
+//        val chatRoom = ChatRoomModel(
+//            FirestoresClass().getCurrentID() + "_" + user!!.id,
+//            listOf(FirestoresClass().getCurrentID(), user!!.id)
+//        )
+//        FirestoresClass().createChatRoom(this, chatRoom, user!!.id)
+//
+//    }
 
     fun sendMessagesuccess() {
         if (binding?.edtSendMessage != null) {
             binding?.edtSendMessage?.setText("")
             displayMessage()
         }
-        if (binding?.imageSelect != null) {
-            binding?.imageSelect?.visibility = View.GONE
-            binding?.imageSelect?.visibility = View.VISIBLE
-        }
+
     }
 
 
@@ -127,7 +113,7 @@ class ChatActivity : AppCompatActivity() {
     fun display(list: ArrayList<ChatMessage>) {
         binding?.rvChat?.layoutManager = LinearLayoutManager(this, VERTICAL, true)
         binding?.rvChat?.setHasFixedSize(true)
-        val adapter = ChatMessageAdapter(this, list, this)
+        val adapter = ChatMessageAdapter(this, list)
         binding?.rvChat?.adapter = adapter
         // adapter.notifyItemChanged(list.size-1)
         adapter.notifyDataSetChanged()
@@ -137,27 +123,51 @@ class ChatActivity : AppCompatActivity() {
 
 
     fun displayMessage() {
-        val message = intent.getParcelableExtra<UserModel>("model")
-        FirestoresClass().getChatMessage(this, message!!.id)
+        user = intent.getParcelableExtra<UserModel>("model")!!
+        FirestoresClass().getChatMessage(this, user!!.id)
+    }
 
 
+
+    private fun openCamera() {
+        val takePictureIntent = Intent(MediaStore.ACTION_IMAGE_CAPTURE)
+        startActivityForResult(takePictureIntent, REQUEST_IMAGE_CAPTURE)
     }
 
     fun openImagePicker() {
-        val intent = Intent(Intent.ACTION_PICK, MediaStore.Images.Media.EXTERNAL_CONTENT_URI)
-        startActivityForResult(intent, PICK_IMAGE_REQUEST)
+        val gallery =Intent(Intent.ACTION_PICK, MediaStore.Images.Media.EXTERNAL_CONTENT_URI)
+        startActivityForResult(gallery, PICK_IMAGE_REQUEST_CODE)
 
     }
+//    override fun onRequestPermissionsResult(
+//        requestCode: Int,
+//        permissions: Array<out String>,
+//        grantResults: IntArray
+//    ) {
+//        super.onRequestPermissionsResult(requestCode, permissions, grantResults)
+//        if (grantResults.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED)
+//           {
+//            openCamera()
+//        } else {
+//            Toast.makeText(
+//                this,
+//                "You just dennied the permission for storage.You can aslo allow it from setting",
+//                Toast.LENGTH_SHORT
+//            ).show()
+//        }
+//    }
+
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
-        if (requestCode == PICK_IMAGE_REQUEST && resultCode == RESULT_OK && data != null) {
-            selectedImageUri = data.data!!
+        if (requestCode== PICK_IMAGE_REQUEST_CODE && resultCode == Activity.RESULT_OK && data != null) {
+            selectedImageUri = data!!.data!!
+
             // binding?.imageSelect?.setImageURI(Uri.parse(selectedImageUri!!.toString()))
         }
-
-
     }
+
+
 
 
     fun uploadImageAndSaveToFirestore(imageUri: Uri) {
@@ -176,22 +186,15 @@ class ChatActivity : AppCompatActivity() {
                         selectedImageUri = null
                     }
             }
-
-        //   }
-
     }
+
 
     @SuppressLint("SuspiciousIndentation")
     private fun loadImage(image: String) {
-//        val user = intent.getParcelableExtra<UserModel>("model")
-//        val hashMap = HashMap<String,Any>()
         val message = binding!!.edtSendMessage!!.text!!.toString()
-
-//        hashMap["image"] = image
-//            FirestoresClass().addImageToChatRoomMessage(this,hashMap,user!!.id)
         sendMessage("", image)
 
-
     }
+
 }
 

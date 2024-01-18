@@ -7,8 +7,8 @@
     <de.hdodenhof.circleimageview.CircleImageView
         android:id="@+id/item_image"
         android:src="@drawable/su"
-        android:layout_width="80dp"
-        android:layout_height="80dp"/>
+        android:layout_width="60dp"
+        android:layout_height="60dp"/>
     <LinearLayout
         android:layout_gravity="center"
         android:layout_marginStart="10dp"

@@ -43,6 +43,7 @@ android {
 }
 
 dependencies {
+
     implementation ("com.squareup.picasso:picasso:2.71828")
     implementation ("com.firebaseui:firebase-ui-auth:8.0.2")
     implementation ("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.7.2")

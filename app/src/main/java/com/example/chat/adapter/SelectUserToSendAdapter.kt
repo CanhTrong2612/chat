@@ -7,13 +7,9 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
-import com.bumptech.glide.Glide
 import com.example.chat.R
-import com.example.chat.fragment.StatusFragment
 import com.example.chat.model.UserModel
 import com.example.chat.ui.ChatActivity
-import com.example.chat.ui.SettingActivity
-import de.hdodenhof.circleimageview.CircleImageView
 
 class SelectUserToSendAdapter(val context: Context, val list: ArrayList<UserModel>):
     RecyclerView.Adapter<RecyclerView.ViewHolder>() {
@@ -29,11 +25,13 @@ class SelectUserToSendAdapter(val context: Context, val list: ArrayList<UserMode
         if (holder is MyViewHolder){
            // Glide.with(context).load(list[position].image).into(holder.image)
             holder.name.text = list[position].name
-            holder.tvSend.setOnClickListener {
-                val intent = Intent(context, ChatActivity::class.java)
-                intent.putExtra("model",list[position])
-                context.startActivity(intent)
-            }
+//            holder.tvSend.setOnClickListener {
+//                val intent = Intent(context, ChatActivity::class.java)
+//                intent.putExtra("name",list[position].name)
+//                intent.putExtra("image",list[position].image)
+//              //  intent.putExtra("model",list[position])
+//                context.startActivity(intent)
+  //          }
 
 
 

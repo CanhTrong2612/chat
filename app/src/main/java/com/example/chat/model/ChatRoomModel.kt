@@ -11,8 +11,10 @@ data class ChatRoomModel(
     val timeStamp: String = SimpleDateFormat("yyyy/MM/dd HH:mm:ss").format(Date()),
     val lastMessageSenderId:String = "",
     val lastMessage:String = "",
+    val lastImage : String = "",
     val name:String= "",
     val image:String = ""
+
 ): Parcelable
 {
     constructor() : this("", listOf(), "","","","","")

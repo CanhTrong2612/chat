@@ -7,19 +7,20 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
+import com.bumptech.glide.Glide
 import com.example.chat.MyInterface
 import com.example.chat.R
 import com.example.chat.firebase.FirestoresClass
+import com.example.chat.fragment.MessFragment
 import com.example.chat.model.ChatRoomModel
+import com.example.chat.model.UserModel
 import com.example.chat.ui.ChatActivity
 import com.squareup.picasso.Picasso
 import de.hdodenhof.circleimageview.CircleImageView
 
-class RecentChatAdapter(val list: ArrayList<ChatRoomModel>, val recentInterface: MyInterface?):
+class RecentChatAdapter(val context: Context,val list: ArrayList<UserModel>,val fragment: MessFragment):
     RecyclerView.Adapter<RecyclerView.ViewHolder>() {
-    lateinit var context: Context
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder {
-        context = parent.context
         return MyViewHolder(
             LayoutInflater.from(parent.context).inflate(R.layout.recent_chat_layout, parent, false)
         )
@@ -29,13 +30,16 @@ class RecentChatAdapter(val list: ArrayList<ChatRoomModel>, val recentInterface:
     }
     override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
         if (holder is MyViewHolder) {
-            Picasso.get()
-                .load(list[position].image)
-                .fit()
-                .into(holder.image)
-          //  Glide.with().load(list[position].image).into(holder.image)
-            if (list[position].lastMessageSenderId==FirestoresClass().getCurrentID()){
-                holder.lastMessage.text ="You: "+list[position].lastMessage
+            Glide.with(context).load(list[position].image).into(holder.image)
+            if (list[position].id==FirestoresClass().getCurrentID()){
+                if (!list[position].lastImage.isNullOrBlank())
+                {
+                    holder.lastMessage.text= "You: You just sent an image"
+                }
+                else{
+                    holder.lastMessage.text ="You: "+list[position].lastMessage
+                }
+
            }
             else{
                 holder.lastMessage.text =list[position].lastMessage
@@ -44,7 +48,6 @@ class RecentChatAdapter(val list: ArrayList<ChatRoomModel>, val recentInterface:
             holder.time.text = list[position].timeStamp
             holder.fullname.text = list[position].name
             holder.itemView.setOnClickListener {
-//                recentInterface.onClick(list[position])
 
                 val intent = Intent(context, ChatActivity::class.java)
                 intent.putExtra("model",list[position])

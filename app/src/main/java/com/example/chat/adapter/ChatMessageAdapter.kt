@@ -17,7 +17,7 @@ import com.example.chat.firebase.FirestoresClass
 import com.example.chat.model.ChatMessage
 import com.example.chat.ui.ChatActivity
 
-class ChatMessageAdapter(val context : Context, val list: ArrayList<ChatMessage>,val activity: ChatActivity) :RecyclerView.Adapter<RecyclerView.ViewHolder>(){
+class ChatMessageAdapter(val context : Context, val list: ArrayList<ChatMessage>) :RecyclerView.Adapter<RecyclerView.ViewHolder>(){
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder {
         return MyViewHolder(LayoutInflater.from(context).inflate(R.layout.chat_row_recyclerview, parent, false))
     }

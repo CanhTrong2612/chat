@@ -9,15 +9,13 @@ import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.example.chat.R
-import com.example.chat.firebase.FirestoresClass
-import com.example.chat.fragment.StatusFragment
-import com.example.chat.model.ChatRoomModel
+import com.example.chat.fragment.FriendFragment
 import com.example.chat.model.UserModel
 import com.example.chat.ui.ChatActivity
 import com.example.chat.ui.SettingActivity
 import de.hdodenhof.circleimageview.CircleImageView
 
-class UsersAdapter(val context: Context, val list: ArrayList<UserModel>,val fragment: StatusFragment):RecyclerView.Adapter<RecyclerView.ViewHolder>() {
+class UsersAdapter(val context: Context, val list: ArrayList<UserModel>):RecyclerView.Adapter<RecyclerView.ViewHolder>() {
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder {
         return MyViewHolder(LayoutInflater.from(context).inflate(R.layout.item_user_layout,parent,false))
     }

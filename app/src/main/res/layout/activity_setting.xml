@@ -104,6 +104,7 @@
                         android:padding="8dp">
 
                         <ImageView
+                            android:id="@+id/chat_setting"
                             android:layout_width="35dp"
                             android:layout_height="35dp"
                             android:background="@drawable/circular_grey_bordersolid"

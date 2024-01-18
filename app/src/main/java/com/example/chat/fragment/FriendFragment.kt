@@ -10,11 +10,9 @@ import androidx.recyclerview.widget.RecyclerView
 import com.example.chat.R
 import com.example.chat.adapter.UsersAdapter
 import com.example.chat.firebase.FirestoresClass
-import com.example.chat.model.ChatRoomModel
 import com.example.chat.model.UserModel
-import com.example.chat.ui.ChatActivity
 
-class StatusFragment : Fragment() {
+class FriendFragment : Fragment() {
     private var rv: RecyclerView?= null
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -28,12 +26,12 @@ class StatusFragment : Fragment() {
     ): View? {
         val view= inflater.inflate(R.layout.fragment_status,container,false)
         rv = view.findViewById(R.id.rv_search)
-        FirestoresClass().getListUser(this)
+        FirestoresClass().getUserToChatRoom(this)
         return view
     }
     fun displayListUser(list: ArrayList<UserModel>){
             rv!!.layoutManager = LinearLayoutManager(requireContext())
-            val adapter = UsersAdapter(requireContext(),list,this)
+            val adapter = UsersAdapter(requireContext(),list)
             rv!!.adapter = adapter
     }
 

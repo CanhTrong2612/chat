@@ -1,24 +1,24 @@
 package com.example.chat.firebase
 
 import android.app.Activity
+import android.content.Context
 import android.util.Log
+import androidx.fragment.app.Fragment
 import com.example.chat.fragment.MessFragment
-import com.example.chat.fragment.StatusFragment
+import com.example.chat.fragment.FriendFragment
 import com.example.chat.model.ChatMessage
 import com.example.chat.model.ChatRoomModel
 import com.example.chat.model.UserModel
 import com.example.chat.ui.ChatActivity
 import com.example.chat.ui.LoginActivity
 import com.example.chat.ui.RegisterActivity
-import com.example.chat.ui.SelectUserToSendMessageActivity
+//import com.example.chat.ui.SelectUserToSendMessageActivity
 import com.example.chat.ui.SettingActivity
-import com.google.android.gms.tasks.Tasks
 import com.google.firebase.auth.FirebaseAuth
 
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.Query
 import com.google.firebase.firestore.SetOptions
-import com.google.firebase.firestore.ktx.toObject
 
 class FirestoresClass {
     private var mFireStore = FirebaseFirestore.getInstance()
@@ -68,19 +68,19 @@ class FirestoresClass {
             }
     }
 
-    fun getListUser(fragment: StatusFragment) {
-        mFireStore.collection("User")
-            .get()
-            .addOnSuccessListener { document ->
-                Log.e("test", document.documents.toString())
-                val list: ArrayList<UserModel> = ArrayList()
-                for (i in document) {
-                    val user = i.toObject(UserModel::class.java)
-                    list.add(user)
-                }
-                fragment.displayListUser(list)
-            }
-    }
+//    fun getListUser(fragment: FriendFragment) {
+//        mFireStore.collection("ChatRoom")
+//            .get()
+//            .addOnSuccessListener { document ->
+//                Log.e("test", document.documents.toString())
+//                val list: ArrayList<UserModel> = ArrayList()
+//                for (i in document) {
+//                    val user = i.toObject(UserModel::class.java)
+//                    list.add(user)
+//                }
+//                fragment.displayListUser(list)
+//            }
+//    }
 
     fun getChatRoomId(): String {
         var userId2: String = ""
@@ -104,9 +104,9 @@ class FirestoresClass {
     }
 
 
-    fun createChatRoom(activity: ChatActivity, chatRoom: ChatRoomModel, userId2: String) {
+    fun createChatRoom( chatRoom: UserModel, userId: String) {
         mFireStore.collection("ChatRoom")
-            .document(getChatRoom(userId2))
+            .document(getChatRoom(userId))
             .set(chatRoom, SetOptions.merge())
             .addOnSuccessListener {
 
@@ -114,14 +114,13 @@ class FirestoresClass {
 
     }
 
-    fun getChatRoomMessage(
+    fun createChatRoomMessage(
         activity: ChatActivity,
-        chatRoom: ChatRoomModel,
-        userId2: String,
+        userId: String,
         chats: ChatMessage
     ) {
         mFireStore.collection("ChatRoom")
-            .document(getChatRoom(userId2))
+            .document(getChatRoom(userId))
             .collection("chats")
             .document()
             .set(chats)
@@ -151,22 +150,47 @@ class FirestoresClass {
 
     }
 
-    fun getUserToChatRoom(fragment: MessFragment) {
+    fun getUserToChatRoom(fragment: Fragment) {
+        mFireStore.collection("User")
+          //  .whereArrayContains("userIds", FirestoresClass().getCurrentID())
+            .get()
+            .addOnSuccessListener { document ->
+                val list = ArrayList<UserModel>()
+                for (i in document) {
+                    val chat = i.toObject(UserModel::class.java)
+                    list.add(chat)
+                }
+                when(fragment){
+                    is FriendFragment ->{
+                        fragment.displayListUser(list)
+                    }
+                }
+
+            }
+    }
+    fun getUserRecentToChatRoom(fragment: MessFragment) {
         mFireStore.collection("ChatRoom")
             .whereArrayContains("userIds", FirestoresClass().getCurrentID())
             .get()
             .addOnSuccessListener { document ->
-                val list = ArrayList<ChatRoomModel>()
+                Log.e("recent", document.documents.toString())
+                val list = ArrayList<UserModel>()
+                val id :String?= null
                 for (i in document) {
-                    val chat = i.toObject<ChatRoomModel>(ChatRoomModel::class.java)
+                    val chat = i.toObject(UserModel::class.java)!!
+                    chat.id = chat.userIds!!.get(1)
                     list.add(chat)
                 }
-                fragment.displayListUser(list)
+                when (fragment) {
+                    is MessFragment -> {
+                        fragment.displayListUser(list)
+                    }
+                }
             }
     }
 
     fun getAlltUser(activity: Activity) {
-        mFireStore.collection("User")
+        mFireStore.collection("ChatRoom")
             .get()
             .addOnSuccessListener { document ->
                 Log.e("getAll", document.documents.toString())
@@ -176,9 +200,9 @@ class FirestoresClass {
                     list.add(user)
                 }
                 when(activity){
-                    is SelectUserToSendMessageActivity ->{
-                        activity?.displayUser(list)
-                    }
+//                    is SelectUserToSendMessageActivity ->{
+//                        activity?.displayUser(list)
+//                    }
                     is SettingActivity ->{
                         activity.numberOfFriend(list)
                     }
@@ -187,21 +211,16 @@ class FirestoresClass {
             }
 
     }
+//    fun update(fragment: MessFragment,userId2: String,hashMap: HashMap<String,Any>){
+//        //val hashMap: HashMap<String,Any>? =null
+//        mFireStore.collection("ChatRoom")
+//          //  .document(getChatRoom(userId2))
+//            .update(hashMap)
+//            .addOnSuccessListener {
+//                fragment .getChatRoomSuccess()
+//            }
+//    }
 
-    fun addImageToChatRoomMessage(
-        activity: ChatActivity,
-        hashMap: HashMap<String,Any>,
-        userId2: String,
-    ) {
-        mFireStore.collection("ChatRoom")
-            .document(getChatRoom(userId2))
-            .collection("chats")
-            .document()
-            .update(hashMap)
-            .addOnSuccessListener {
-               activity.displayMessage()
-            }
-    }
 }
 
 
